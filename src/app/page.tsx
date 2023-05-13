@@ -1,5 +1,6 @@
 "use client";
 
+import { ClipLoader } from "react-spinners";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
 import {
@@ -10,7 +11,7 @@ import {
   Button,
   Modal,
 } from "flowbite-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import React from "react";
 import axios from "axios";
 
@@ -18,6 +19,19 @@ export default function Home() {
   const [sentToast, setSentToast] = useState(false);
   const [detailsModal, setDetailsModal] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [yourName, setYourName] = useState("Dwight Schrute");
+  const [bossName, setBossName] = useState("Michael Scott");
+  const [yourEmail, setYourEmail] = useState("hello@jaimyn.com.au");
+  const [bossEmail, setBossEmail] = useState("jaimyn.mayer@gmail.com");
+
+  const resetForm = useCallback(() => {
+    setYourName("Dwight Schrute");
+    setBossName("Michael Scott");
+    setYourEmail("hello@jaimyn.com.au");
+    setBossEmail("jaimyn.mayer@gmail.com");
+  }, []);
 
   useEffect(() => {
     setTimeout(setSentToast, 5000, false);
@@ -55,86 +69,124 @@ export default function Home() {
       <Modal show={detailsModal}>
         <Modal.Header>First we need some details</Modal.Header>
         <Modal.Body>
-          <form className="flex flex-col gap-4">
-            <div>
-              <p className="mb-4">
-                Before you can start faking sick days like a pro, we need some
-                deets from you. Don&#8217;t worry, we won&#8217;t tell your boss
-                (if you keep payinf for a subscription 😜).
-              </p>
+          <div>
+            <p className="mb-4">
+              Before you can start faking sick days like a pro, we need some
+              deets from you. Don&#8217;t worry, we won&#8217;t tell your boss
+              (if you keep paying for a subscription 😜).
+            </p>
 
-              <div className="mb-2 block">
-                <Label htmlFor="yourName" value="Your Name" />
-              </div>
-              <TextInput
-                id="yourName"
-                type="text"
-                placeholder="Dwight Schrute"
-                required={true}
-              />
-
-              <br />
-
-              <div className="mb-2 block">
-                <Label htmlFor="yourEmail" value="Your Email" />
-              </div>
-              <TextInput
-                id="yourEmail"
-                type="email"
-                placeholder="imtotallysick@hotmail.net"
-                required={true}
-              />
-
-              <br />
-
-              <div className="mb-2 block">
-                <Label htmlFor="bossEmail" value="Your Boss' Email" />
-              </div>
-              <TextInput
-                id="yourEmail"
-                type="email"
-                placeholder="bigshotmanager@gmail.com"
-                required={true}
-              />
+            <div className="mb-2 block">
+              <Label htmlFor="yourName" value="Your Name" />
             </div>
+            <TextInput
+              id="yourName"
+              key="yourName"
+              type="text"
+              placeholder="Dwight Schrute"
+              required={true}
+              onBlur={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setYourName(e.target.value);
+              }}
+              disabled={loading}
+            />
 
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="remember"
-                onChange={() => {
-                  setAgreed(!agreed);
-                }}
-              />
-              <Label htmlFor="remember">
-                I agree that there is no privacy policy and my personal info may
-                be sold on the dark web.
-              </Label>
+            <br />
+
+            <div className="mb-2 block">
+              <Label htmlFor="bossName" value="Boss' Name" />
             </div>
-          </form>
+            <TextInput
+              id="bossName"
+              type="text"
+              placeholder="Michael Scott"
+              required={true}
+              onBlur={(e) => {
+                setBossName(e.target.value);
+              }}
+              disabled={loading}
+            />
+
+            <br />
+
+            <div className="mb-2 block">
+              <Label htmlFor="yourEmail" value="Your Email" />
+            </div>
+            <TextInput
+              id="yourEmail"
+              key="yourEmail"
+              type="email"
+              placeholder="imtotallysick@hotmail.net"
+              required={true}
+              onBlur={(e) => {
+                setYourEmail(e.target.value);
+              }}
+              disabled={loading}
+            />
+
+            <br />
+
+            <div className="mb-2 block">
+              <Label htmlFor="bossEmail" value="Your Boss' Email" />
+            </div>
+            <TextInput
+              id="bossEmail"
+              key="bossEmail"
+              type="email"
+              placeholder="bigshotmanager@gmail.com"
+              required={true}
+              onBlur={(e) => {
+                setBossEmail(e.target.value);
+              }}
+              disabled={loading}
+            />
+          </div>
+
+          <br />
+
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="remember"
+              onChange={(e) => {
+                setAgreed(!agreed);
+              }}
+              disabled={loading}
+            />
+            <Label htmlFor="remember">
+              I agree that there is no privacy policy and my personal info may
+              be sold on the dark web.
+            </Label>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            className="ml-auto"
-            disabled={!agreed}
-            onClick={() => {
-              axios
-                .post("/api/cough-cough", {
-                  to: "jaimyn.mayer@gmail.com",
-                  from: "hello@jaimyn.com.au",
-                  toName: "Bri",
-                  fromName: "Jaimyn Mayer",
-                })
-                .then(function (response) {
-                  setDetailsModal(false);
-                  setSentToast(true);
-                })
-                .catch(function (error) {
-                  console.log(error);
-                });
-            }}
-          >
-            Save
-          </Button>
+          <div className="ml-auto flex flex-row space-x-2">
+            {loading && <ClipLoader color="#36d7b7" />}
+            <Button
+              disabled={!agreed}
+              onClick={() => {
+                setLoading(true);
+                axios
+                  .post("/api/cough-cough", {
+                    to: bossEmail,
+                    from: yourEmail,
+                    toName: bossName,
+                    fromName: yourName,
+                  })
+                  .then(function (response) {
+                    setDetailsModal(false);
+                    setSentToast(true);
+                    setLoading(false);
+                    resetForm();
+                  })
+                  .catch(function (error) {
+                    alert(error);
+                    setLoading(false);
+                  });
+              }}
+            >
+              Save
+            </Button>
+          </div>
         </Modal.Footer>
       </Modal>
 
