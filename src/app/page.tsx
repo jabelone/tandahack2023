@@ -12,6 +12,7 @@ import {
 } from "flowbite-react";
 import { useState, useEffect } from "react";
 import React from "react";
+import axios from "axios";
 
 export default function Home() {
   const [sentToast, setSentToast] = useState(false);
@@ -51,7 +52,7 @@ export default function Home() {
         </div>
       </div>
 
-      <Modal show={detailsModal} dismissible={true}>
+      <Modal show={detailsModal}>
         <Modal.Header>First we need some details</Modal.Header>
         <Modal.Body>
           <form className="flex flex-col gap-4">
@@ -59,7 +60,7 @@ export default function Home() {
               <p className="mb-4">
                 Before you can start faking sick days like a pro, we need some
                 deets from you. Don&#8217;t worry, we won&#8217;t tell your boss
-                (unless you&#8217;re on the free plan 😜).
+                (if you keep payinf for a subscription 😜).
               </p>
 
               <div className="mb-2 block">
@@ -112,7 +113,26 @@ export default function Home() {
           </form>
         </Modal.Body>
         <Modal.Footer>
-          <Button className="ml-auto" disabled={!agreed}>
+          <Button
+            className="ml-auto"
+            disabled={!agreed}
+            onClick={() => {
+              axios
+                .post("/api/cough-cough", {
+                  to: "jaimyn.mayer@gmail.com",
+                  from: "hello@jaimyn.com.au",
+                  toName: "Bri",
+                  fromName: "Jaimyn Mayer",
+                })
+                .then(function (response) {
+                  setDetailsModal(false);
+                  setSentToast(true);
+                })
+                .catch(function (error) {
+                  console.log(error);
+                });
+            }}
+          >
             Save
           </Button>
         </Modal.Footer>
