@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
   };
   // @ts-ignore
   await sendgrid.send(msg).catch((error) => {
-    error.response.body.errors.forEach((err) => {
+    error.response.body.errors.forEach((err: any) => {
       console.log(err);
     });
   });
