@@ -70,7 +70,7 @@ export default function Home() {
         <Modal.Header>First we need some details</Modal.Header>
         <Modal.Body>
           <div>
-            <p className="mb-4">
+            <p className="mb-4 dark:text-black text-black">
               Before you can start faking sick days like a pro, we need some
               deets from you. Don&#8217;t worry, we won&#8217;t tell your boss
               (if you keep paying for a subscription 😜).
